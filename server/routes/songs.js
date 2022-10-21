@@ -40,7 +40,7 @@ router.get("/getAll", async (req, res) => {
 
   const data = await song.find(options);
   if (data) {
-    return res.status(200).send({ success: true, song: data });
+    return res.status(200).send({ success: true, songs: data });
   } else {
     return res.status(400).send({ success: false, msg: "Data Not Found" });
   }

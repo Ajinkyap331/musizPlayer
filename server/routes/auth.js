@@ -80,4 +80,28 @@ router.get("/getUsers", async (req, res) => {
   }
 });
 
+router.put("/updateRole/:userId", async (req, res) => {
+  const filter = { _id: req.params.userId };
+  const role = req.body.data.role;
+
+  try {
+    const result = await user.findOneAndUpdate(filter, { role: role });
+    res.status(200).send({ user: result });
+  } catch (error) {
+    res.status(400).send({ success: false, msg: error });
+  }
+});
+
+router.delete("/deleteUser/:userId", async (req, res) => {
+  const filter = { _id: req.params.userId };
+  const result = await user.deleteOne(filter);
+  if (result.deletedCount === 1) {
+    return res
+      .status(200)
+      .send({ success: true, msg: "User Removed Successfully", data: result });
+  } else {
+    return res.status(400).send({ success: false, msg: "User Not Found" });
+  }
+});
+
 module.exports = router;
