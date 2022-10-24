@@ -26,10 +26,40 @@ import { filterByLanguage, filters } from "../utils/supportfunctions";
 // import AlertError from "./AlertError";
 
 const DashBoardNewSong = () => {
+  const [titleName, setTitleName] = useState(null);
+  const [artistName, setArtistName] = useState(null);
+  const [albumName, setAlbumName] = useState(null);
+  const [Language, setLanguage] = useState(null);
+  const [Category, setCategory] = useState(null);
   const [songName, setSongName] = useState("");
+
+  // States for Images
   const [songImageCover, setSongImageCover] = useState(null);
   const [isImageLoading, setIsImageLoading] = useState(false);
   const [imageUploadProgress, setImageUploadProgress] = useState(0);
+
+  //States for audio
+
+  const [songAudioCover, setSongAudioCover] = useState(null);
+  const [audioUploadingProgress, setAudioUploadingProgress] = useState(0);
+  const [isAudioLoading, setIsAudioLoading] = useState(false);
+
+  // States for artist
+
+  const [artistImageCover, setArtistImageCover] = useState(null);
+  const [artistUploadingProgress, setArtistUploadingProgress] = useState(0);
+  const [isArtistUploading, setIsArtistUploading] = useState(false);
+  const [artistNameId, setArtistNameId] = useState("");
+  const [twitter, settwitter] = useState("");
+  const [instagram, setInstagram] = useState("");
+
+  // States for album
+
+  const [albumImageCover, setAlbumImageCover] = useState(null);
+  const [albumUploadingProgress, setAlbumUploadingProgress] = useState(0);
+  const [isAlbumUploading, setIsAlbumUploading] = useState(false);
+  const [albumNameId, setAlbumNameId] = useState("");
+
   const [
     {
       allArtists,
@@ -42,10 +72,6 @@ const DashBoardNewSong = () => {
     },
     dispatch,
   ] = useStateValue();
-
-  const [songAudioCover, setSongAudioCover] = useState(null);
-  const [audioUploadingProgress, setAudioUploadingProgress] = useState(0);
-  const [isAudioLoading, setIsAudioLoading] = useState(false);
 
   useEffect(() => {
     if (!allArtists) {
@@ -72,11 +98,57 @@ const DashBoardNewSong = () => {
       setIsImageLoading(false);
       setIsAudioLoading(false);
     });
+    dispatch({
+      type: actionType.set_ALERT_TYPE,
+      alertType: "success",
+    });
+
+    setTimeout(() => {
+      dispatch({
+        type: actionType.set_ALERT_TYPE,
+        alertType: null,
+      });
+    }, 3000);
+  };
+
+  const deleteFileObject1 = (url, isImage) => {
+    setIsAlbumUploading(true);
+    setIsArtistUploading(true);
+
+    const deleteRef = ref(storage, url);
+    deleteObject(deleteRef).then(() => {
+      setAlbumImageCover(null);
+      setArtistImageCover(null);
+      setIsAlbumUploading(false);
+      setIsArtistUploading(false);
+    });
+    dispatch({
+      type: actionType.set_ALERT_TYPE,
+      alertType: "success",
+    });
+
+    setTimeout(() => {
+      dispatch({
+        type: actionType.set_ALERT_TYPE,
+        alertType: null,
+      });
+    }, 3000);
   };
 
   const saveSong = () => {
     if (!songAudioCover || !songImageCover) {
       // throw the alert
+      dispatch({
+        type: actionType.set_ALERT_TYPE,
+        alertType: "danger",
+      });
+
+      setTimeout(() => {
+        dispatch({
+          type: actionType.set_ALERT_TYPE,
+          alertType: null,
+        });
+      }, 3000);
     } else {
       setIsAudioLoading(true);
       setIsImageLoading(true);
@@ -97,6 +169,17 @@ const DashBoardNewSong = () => {
           })
         );
       });
+      dispatch({
+        type: actionType.set_ALERT_TYPE,
+        alertType: "success",
+      });
+
+      setTimeout(() => {
+        dispatch({
+          type: actionType.set_ALERT_TYPE,
+          alertType: null,
+        });
+      }, 3000);
       setSongName(null);
       setIsAudioLoading(false);
       setIsImageLoading(false);
@@ -121,23 +204,144 @@ const DashBoardNewSong = () => {
     }
   };
 
+  const saveArtist = () => {
+    if (!artistImageCover || !artistNameId || !twitter || !instagram) {
+      // Alert msg
+      dispatch({
+        type: actionType.set_ALERT_TYPE,
+        alertType: "danger",
+      });
+
+      setTimeout(() => {
+        dispatch({
+          type: actionType.set_ALERT_TYPE,
+          alertType: null,
+        });
+      }, 3000);
+    } else {
+      setIsArtistUploading(true);
+      const data = {
+        name: artistNameId,
+        imageURL: artistImageCover,
+        twitter: `www.twitter.com/${twitter}`,
+        instagram: `www.instagram.com/${instagram}`,
+      };
+      saveNewArtist(data).then((res) => {
+        getAllArtists().then((data) =>
+          dispatch({
+            type: actionType.SET_ALL_ARTISTS,
+            allArtists: data.artist,
+          })
+        );
+      });
+      dispatch({
+        type: actionType.set_ALERT_TYPE,
+        alertType: "success",
+      });
+
+      setTimeout(() => {
+        dispatch({
+          type: actionType.set_ALERT_TYPE,
+          alertType: null,
+        });
+      }, 3000);
+      setIsArtistUploading(false);
+      setArtistImageCover(null);
+      setArtistNameId("");
+      settwitter("");
+      setInstagram("");
+    }
+  };
+
+  const saveAlbum = () => {
+    if (!albumImageCover || !albumNameId) {
+      // Alert msg
+      dispatch({
+        type: actionType.set_ALERT_TYPE,
+        alertType: "danger",
+      });
+
+      setTimeout(() => {
+        dispatch({
+          type: actionType.set_ALERT_TYPE,
+          alertType: null,
+        });
+      }, 3000);
+    } else {
+      setIsAlbumUploading(true);
+      const data = {
+        name: albumNameId,
+        imageURL: albumImageCover,
+      };
+      saveNewAlbum(data).then(() => {
+        getAllAlbums().then((data) => {
+          dispatch({
+            type: actionType.SET_ALL_ALBUMS,
+            allAlbums: data.album,
+          });
+        });
+      });
+      dispatch({
+        type: actionType.set_ALERT_TYPE,
+        alertType: "success",
+      });
+
+      setTimeout(() => {
+        dispatch({
+          type: actionType.set_ALERT_TYPE,
+          alertType: null,
+        });
+      }, 3000);
+      setIsAlbumUploading(false);
+      setAlbumImageCover(null);
+      setAlbumNameId("");
+    }
+  };
+
   return (
     <div className="flex bg-white  flex-col items-center justify-center p-4 border border-black gap-4 rounded-md">
+      {/*Song Name */}
       <input
         type="text"
-        placeholder="Type your song name..."
+        placeholder="Please give Audio file first"
         className="w-full p-3 rounded-md text-base font-semibold text-textColor outline-none shadow-sm border border-black bg-white"
         value={songName}
         onChange={(e) => setSongName(e.target.value)}
       />
       <div className="flex w-full justify-between flex-wrap items-center gap-4">
-        <FilterButtons filterData={allArtists} flag={"Artist"} />
-        <FilterButtons filterData={allAlbums} flag={"Albums"} />
-        <FilterButtons filterData={filterByLanguage} flag={"Language"} />
-        <FilterButtons filterData={filters} flag={"Category"} />
+        {/*Artist Name */}
+        <FilterButtons
+          filterData={allArtists}
+          flag={"Artist"}
+          data={artistName}
+          songAudioCover={songAudioCover}
+        />
+        {/*Album Name */}
+        <FilterButtons
+          filterData={allAlbums}
+          flag={"Albums"}
+          data={albumName}
+          songAudioCover={songAudioCover}
+        />
+        {/*Language */}
+        <FilterButtons
+          filterData={filterByLanguage}
+          flag={"Language"}
+          data={Language}
+          songAudioCover={songAudioCover}
+        />
+        {/*Category Name */}
+        <FilterButtons
+          filterData={filters}
+          flag={"Category"}
+          data={Category}
+          songAudioCover={songAudioCover}
+        />
       </div>
+      {/*Image File Uploading */}
       <div className="bg-card backdrop-blur-md w-full h-300 rounded-md border-2 border-dotted border-black bg-gray-100 cursor-pointer">
         {isImageLoading && <FileLoader progress={imageUploadProgress} />}
+
         {!isImageLoading && (
           <>
             {!songImageCover ? (
@@ -177,6 +381,12 @@ const DashBoardNewSong = () => {
                 setProgress={setAudioUploadingProgress}
                 isLoading={setIsAudioLoading}
                 isImage={false}
+                setArtistName={setArtistName}
+                setAlbumName={setAlbumName}
+                setLanguage={setLanguage}
+                setCategory={setCategory}
+                setTitleName={setTitleName}
+                setSongName={setSongName}
               />
             ) : (
               <div className="relative w-full h-full flex items-center justify-center overflow-hidden rounded-md">
@@ -193,6 +403,7 @@ const DashBoardNewSong = () => {
           </>
         )}
       </div>
+      {/* Save Button */}
       <div className="flex items-center justify-center w-35 p-4">
         {isImageLoading || isAudioLoading ? (
           <DisabledButton />
@@ -203,6 +414,143 @@ const DashBoardNewSong = () => {
             onClick={saveSong}
           >
             Save
+          </motion.button>
+        )}
+      </div>
+      {/*Image Uploader for Artist */}
+      <p className="text-xl font-semifold text-headingColor">Artist Details</p>
+      <div className="bg-card backdrop-blur-md w-full h-300 rounded-md border-2 border-dotted border-black bg-gray-100 cursor-pointer">
+        {isArtistUploading && <FileLoader progress={artistUploadingProgress} />}
+
+        {!isArtistUploading && (
+          <>
+            {!artistImageCover ? (
+              <FileUploader
+                updateState={setArtistImageCover}
+                setProgress={setArtistUploadingProgress}
+                isLoading={setIsArtistUploading}
+                isImage={true}
+              />
+            ) : (
+              <div className="relative w-full h-full overflow-hidden rounded-md">
+                <img
+                  src={artistImageCover}
+                  className="w-full h-full object-cover"
+                  alt=""
+                />
+                <button
+                  type="button"
+                  className="absolute bottom-3 right-3 p-3 rounded-full bg-red-500 text-xl cursor-pointer outline-none border-none hover:shadow-md duration-200 transition-all ease-in-out "
+                  onClick={() => deleteFileObject1(artistImageCover, true)}
+                >
+                  <MdDelete className="text-white " />
+                </button>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+      {/* artist name */}
+      <input
+        type="text"
+        placeholder="Artist name..."
+        className="w-full p-3 rounded-md text-base font-semibold text-textColor outline-none shadow-sm border border-black bg-white"
+        value={artistNameId}
+        onChange={(e) => setArtistNameId(e.target.value)}
+      />
+      {/* Twitter */}
+      <div className="flex items-center rounded-md p-3 border border-black w-full">
+        <p className="text-base font-semibold text-gray-400 ">
+          www.twitter.com/
+        </p>
+        <input
+          type="text"
+          placeholder="twitter id"
+          className="w-full text-base font-semibold text-textColor outline-none bg-transparent"
+          value={twitter}
+          onChange={(e) => settwitter(e.target.value)}
+        />
+      </div>
+
+      {/* Instagram */}
+      <div className="flex items-center rounded-md p-3 border border-black w-full">
+        <p className="text-base font-semibold text-gray-400 ">
+          www.instagram.com/
+        </p>
+        <input
+          type="text"
+          placeholder="instagram id"
+          className="w-full text-base font-semibold text-textColor outline-none bg-transparent"
+          value={instagram}
+          onChange={(e) => setInstagram(e.target.value)}
+        />
+      </div>
+      {/* Save Artist */}
+      <div className="flex items-center justify-center w-35 p-4">
+        {isArtistUploading ? (
+          <DisabledButton />
+        ) : (
+          <motion.button
+            whileTap={{ scale: 0.75 }}
+            className="px-8 py-2 w-full rounded-md text-white  bg-blue-600  hover:bg-blue-400"
+            onClick={saveArtist}
+          >
+            Save Artist
+          </motion.button>
+        )}
+      </div>
+      {/* Album Information */}
+      <p className="text-xl font-semifold text-headingColor">Album Details</p>
+      <div className="bg-card backdrop-blur-md w-full h-300 rounded-md border-2 border-dotted border-black bg-gray-100 cursor-pointer">
+        {isAlbumUploading && <FileLoader progress={albumUploadingProgress} />}
+
+        {!isAlbumUploading && (
+          <>
+            {!albumImageCover ? (
+              <FileUploader
+                updateState={setAlbumImageCover}
+                setProgress={setAlbumUploadingProgress}
+                isLoading={setIsAlbumUploading}
+                isImage={true}
+              />
+            ) : (
+              <div className="relative w-full h-full overflow-hidden rounded-md">
+                <img
+                  src={albumImageCover}
+                  className="w-full h-full object-cover"
+                  alt=""
+                />
+                <button
+                  type="button"
+                  className="absolute bottom-3 right-3 p-3 rounded-full bg-red-500 text-xl cursor-pointer outline-none border-none hover:shadow-md duration-200 transition-all ease-in-out "
+                  onClick={() => deleteFileObject1(albumImageCover, true)}
+                >
+                  <MdDelete className="text-white " />
+                </button>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+      {/* Album Name */}
+      <input
+        type="text"
+        placeholder="Album name..."
+        className="w-full p-3 rounded-md text-base font-semibold text-textColor outline-none shadow-sm border border-black bg-white"
+        value={albumNameId}
+        onChange={(e) => setAlbumNameId(e.target.value)}
+      />
+      {/* Save Album  */}
+      <div className="flex items-center justify-center w-35 p-4">
+        {isAlbumUploading ? (
+          <DisabledButton />
+        ) : (
+          <motion.button
+            whileTap={{ scale: 0.75 }}
+            className="px-8 py-2 w-full rounded-md text-white  bg-blue-600  hover:bg-blue-400"
+            onClick={saveAlbum}
+          >
+            Save Album
           </motion.button>
         )}
       </div>
@@ -275,13 +623,22 @@ export const FileLoader = ({ progress }) => {
 export const FileUploader = ({
   updateState,
   setProgress,
+  setSongName,
   isLoading,
   isImage,
+  setAlbumName,
+  setTitleName,
+  setArtistName,
+  setCategory,
+  setLanguage,
 }) => {
+  const [{ alertType }, dispatch] = useStateValue();
   const uploadFile = (e) => {
     isLoading(true);
-    const uploadedFile = e.target.files[0];
-    // console.log(uploadedFile);
+    let uploadedFile;
+
+    uploadedFile = e.target.files[0];
+
     const storageRef = ref(
       storage,
       `${isImage ? "Images" : "Audio"}/${Date.now()}-${uploadedFile.name}`
@@ -298,11 +655,50 @@ export const FileUploader = ({
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           updateState(downloadURL);
+          if (!isImage) {
+            const jsmediatags = window.jsmediatags;
+            jsmediatags.read(uploadedFile, {
+              onSuccess: function (tag) {
+                setSongName(tag.tags.title);
+                setTitleName(tag.tags.title);
+                setArtistName(tag.tags.artist);
+                setAlbumName(tag.tags.album);
+                setLanguage(tag.tags.language);
+                setCategory(tag.tags.genre);
+              },
+              onError: function (error) {
+                dispatch({
+                  type: actionType.set_ALERT_TYPE,
+                  alertType: "danger",
+                });
+
+                setTimeout(() => {
+                  dispatch({
+                    type: actionType.set_ALERT_TYPE,
+                    alertType: null,
+                  });
+                }, 3000);
+              },
+            });
+          }
           isLoading(false);
+
+          dispatch({
+            type: actionType.set_ALERT_TYPE,
+            alertType: "success",
+          });
+
+          setTimeout(() => {
+            dispatch({
+              type: actionType.set_ALERT_TYPE,
+              alertType: null,
+            });
+          }, 3000);
         });
       }
     );
   };
+
   return (
     <label>
       <div className="flex flex-col items-center justify-center h-full">

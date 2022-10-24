@@ -15,10 +15,10 @@ const DashboardSongs = () => {
   useEffect(() => {
     if (!allSongs) {
       getAllSongs().then((data) => {
-        // console.log(data.song);
+        console.log(data.songs);
         dispatch({
           type: actionType.SET_ALL_SONGS,
-          allSongs: data.song,
+          allSongs: data.songs,
         });
       });
     }
@@ -51,7 +51,7 @@ const DashboardSongs = () => {
         </i>
       </div>
       {/*Main Container*/}
-      <div className="relative w-full my-4 p-4 border border-white roundeed-md">
+      <div className="relative w-full my-4 p-4 py-16 border border-white rounded-md">
         <div>
           {/*The Count */}
           <div className="absolute top-4 left-4">

@@ -4,11 +4,46 @@ import { motion } from "framer-motion";
 import { useStateValue } from "../context/StateProvider";
 import { actionType } from "../context/reducer";
 
-const FilterButtons = ({ filterData, flag }) => {
+const FilterButtons = ({ filterData, flag, data, songAudioCover }) => {
   const [filterName, setFilterName] = useState(null);
   const [filterMenu, setFilterMenu] = useState(false);
+  const [onceRender, setOnceRender] = useState(false);
   const [{ languageFilter, artistFilter, albumFilter, filterTerm }, dispatch] =
     useStateValue();
+
+  if (songAudioCover && data && !onceRender) {
+    setOnceRender(true);
+    setFilterMenu(false);
+    console.log(data, flag);
+    if (data !== "" && data) {
+      setFilterName(data);
+    }
+
+    if (flag === "Artist") {
+      dispatch({
+        type: actionType.SET_ARTIST_FILTER,
+        artistFilter: data,
+      });
+    }
+    if (flag === "Albums") {
+      dispatch({
+        type: actionType.SET_ALBUM_FILTER,
+        albumFilter: data,
+      });
+    }
+    if (flag === "Language") {
+      dispatch({
+        type: actionType.SET_LANGUAGE_FILTER,
+        languageFilter: data,
+      });
+    }
+    if (flag === "Category") {
+      dispatch({
+        type: actionType.SET_FILTER_TERM,
+        filterTerm: data,
+      });
+    }
+  }
 
   const updateFilterButton = (name) => {
     setFilterMenu(false);
@@ -39,6 +74,7 @@ const FilterButtons = ({ filterData, flag }) => {
       });
     }
   };
+
   return (
     <div className="bg-white border border-black rounded-md px-4 py-1 relative cursor-pointer hover:border-gray-400">
       <p

@@ -10,3 +10,4 @@ export { default as DashboardAlbums } from "./DashboardAlbums";
 export { default as SongCard } from "./SongCard";
 export { default as DashBoardNewSong } from "./DashBoardNewSong";
 export { default as FilterButtons } from "./FilterButtons";
+export { default as Alert } from "./Alert";
