@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { NavLink } from "react-router-dom";
-import { IoAdd, IoPause, IoPlay, IoTrash } from "react-icons/io5";
 import { AiOutlineClear } from "react-icons/ai";
-import { useStateValue } from "../context/StateProvider";
 import { getAllSongs } from "../api";
 import { actionType } from "../context/reducer";
+import { useStateValue } from "../context/StateProvider";
 import { BiSearchAlt } from "react-icons/bi";
-import SongCard from "./SongCard";
-import { SongContainerMai } from "./SearchPage";
 import SongCardMain from "./SongCardMain";
+import { SongContainerMain } from "./StartPage";
 
-const DashboardSongs = () => {
+const SearchPage = () => {
   const [songFilter, setSongFilter] = useState("");
   const [isFocus, setIsFocus] = useState(false);
   const [song, setSong] = useState([]);
@@ -52,12 +49,6 @@ const DashboardSongs = () => {
       onSubmit={SearchSong}
     >
       <div className="w-full flex justify-center items-center gap-20">
-        <NavLink
-          to={"/dashboard/newSong"}
-          className="flex items-center justify-center px-4 py-3 border rounded-md border-white hover:border-gray-500 hover:shadow-md cursor-pointer"
-        >
-          <IoAdd />
-        </NavLink>
         {songFilter && (
           <i onClick={() => setSongFilter("")}>
             <AiOutlineClear className="text-3xl text-textColor cursor-pointer" />
@@ -85,31 +76,20 @@ const DashboardSongs = () => {
       </div>
       {!songFilter && (
         <div className="relative w-full my-4 p-4 py-16 border border-black rounded-md">
-          <SongContainer data={allSongs} />
+          <SongContainerMain data={allSongs} />
         </div>
       )}
       {songFilter && (
         <div className="relative w-full my-4 p-4 py-16 border border-black rounded-md">
           {console.log(song)}
-          <SongContainerMain1 data={song} />
+          <SongContainerMai data={song} />
         </div>
       )}
     </form>
   );
 };
 
-export const SongContainer = ({ data }) => {
-  return (
-    <div className="w-full flex flex-wrap gap-3 items-center justify-evenly">
-      {data &&
-        data.map((song, i) => (
-          <SongCard key={song._id} data={song} index={i} type="song" />
-        ))}
-    </div>
-  );
-};
-
-export const SongContainerMain1 = ({ data }) => {
+export const SongContainerMai = ({ data }) => {
   return (
     <div className="w-full flex flex-wrap gap-3 items-center justify-evenly">
       {data &&
@@ -124,4 +104,4 @@ export const SongContainerMain1 = ({ data }) => {
   );
 };
 
-export default DashboardSongs;
+export default SearchPage;

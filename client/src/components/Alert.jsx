@@ -16,7 +16,9 @@ const Alert = ({ type }) => {
       {type === "success" && (
         <div className="flex items-center justify-center gap-4">
           <BsEmojiSmileUpsideDown className="text-3xl text-secondary" />
-          <p className="text-xl font-semibold text-secondary">Data Saved</p>
+          <p className="text-xl font-semibold text-secondary">
+            Successfully Uploaded
+          </p>
         </div>
       )}
       {type === "danger" && (

@@ -4,46 +4,11 @@ import { motion } from "framer-motion";
 import { useStateValue } from "../context/StateProvider";
 import { actionType } from "../context/reducer";
 
-const FilterButtons = ({ filterData, flag, data, songAudioCover }) => {
+const FilterButtons = ({ filterData, flag }) => {
   const [filterName, setFilterName] = useState(null);
   const [filterMenu, setFilterMenu] = useState(false);
-  const [onceRender, setOnceRender] = useState(false);
   const [{ languageFilter, artistFilter, albumFilter, filterTerm }, dispatch] =
     useStateValue();
-
-  if (songAudioCover && data && !onceRender) {
-    setOnceRender(true);
-    setFilterMenu(false);
-    console.log(data, flag);
-    if (data !== "" && data) {
-      setFilterName(data);
-    }
-
-    if (flag === "Artist") {
-      dispatch({
-        type: actionType.SET_ARTIST_FILTER,
-        artistFilter: data,
-      });
-    }
-    if (flag === "Albums") {
-      dispatch({
-        type: actionType.SET_ALBUM_FILTER,
-        albumFilter: data,
-      });
-    }
-    if (flag === "Language") {
-      dispatch({
-        type: actionType.SET_LANGUAGE_FILTER,
-        languageFilter: data,
-      });
-    }
-    if (flag === "Category") {
-      dispatch({
-        type: actionType.SET_FILTER_TERM,
-        filterTerm: data,
-      });
-    }
-  }
 
   const updateFilterButton = (name) => {
     setFilterMenu(false);
@@ -84,8 +49,8 @@ const FilterButtons = ({ filterData, flag, data, songAudioCover }) => {
         {!filterName && flag}
         {filterName && (
           <>
-            {filterName.length > 15
-              ? `${filterName.name.slice(0, 14)}...`
+            {filterName?.length > 15
+              ? `${filterName?.name.slice(0, 14)}...`
               : filterName}
           </>
         )}

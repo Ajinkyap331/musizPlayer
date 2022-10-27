@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useStateValue } from "../context/StateProvider";
 import { motion } from "framer-motion";
 import moment from "moment";
@@ -126,6 +126,16 @@ export const DashboardUserCard = ({ data, index }) => {
 
 const DashboardUsers = () => {
   const [{ allUsers }, dispatch] = useStateValue();
+  useEffect(() => {
+    if (!allUsers) {
+      getAllUsers().then((data) => {
+        dispatch({
+          type: actionType.SET_ALL_USERS,
+          allUsers: data.data,
+        });
+      });
+    }
+  }, []);
   return (
     <div className="w-full p-4 flex items-center justify-center flex-col">
       <div
@@ -162,7 +172,7 @@ const DashboardUsers = () => {
         </div>
         {allUsers &&
           allUsers?.map((data, i) => (
-            <DashboardUserCard data={data} index={i} />
+            <DashboardUserCard data={data} index={i} key={data.email} />
           ))}
       </div>
     </div>

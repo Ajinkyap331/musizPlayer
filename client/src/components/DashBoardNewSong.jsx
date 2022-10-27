@@ -26,11 +26,6 @@ import { filterByLanguage, filters } from "../utils/supportfunctions";
 // import AlertError from "./AlertError";
 
 const DashBoardNewSong = () => {
-  const [titleName, setTitleName] = useState(null);
-  const [artistName, setArtistName] = useState(null);
-  const [albumName, setAlbumName] = useState(null);
-  const [Language, setLanguage] = useState(null);
-  const [Category, setCategory] = useState(null);
   const [songName, setSongName] = useState("");
 
   // States for Images
@@ -97,6 +92,7 @@ const DashBoardNewSong = () => {
       setSongAudioCover(null);
       setIsImageLoading(false);
       setIsAudioLoading(false);
+      setSongName("");
     });
     dispatch({
       type: actionType.set_ALERT_TYPE,
@@ -180,26 +176,27 @@ const DashBoardNewSong = () => {
           alertType: null,
         });
       }, 3000);
-      setSongName(null);
+      setSongName("");
       setIsAudioLoading(false);
       setIsImageLoading(false);
       setSongAudioCover(null);
       setSongImageCover(null);
+
       dispatch({
-        type: actionType.SET_ALL_ARTISTS,
-        artistFilter: null,
+        type: actionType.SET_ARTIST_FILTER,
+        artistFilter: "",
       });
       dispatch({
         type: actionType.SET_LANGUAGE_FILTER,
-        languageFilter: null,
+        languageFilter: "",
       });
       dispatch({
         type: actionType.SET_ALBUM_FILTER,
-        albumFilter: null,
+        albumFilter: "",
       });
       dispatch({
         type: actionType.SET_FILTER_TERM,
-        filterTerm: null,
+        filterTerm: "",
       });
     }
   };
@@ -303,40 +300,20 @@ const DashBoardNewSong = () => {
       {/*Song Name */}
       <input
         type="text"
-        placeholder="Please give Audio file first"
+        placeholder="Enter Song Name or Upload Song to fetch Song Name"
         className="w-full p-3 rounded-md text-base font-semibold text-textColor outline-none shadow-sm border border-black bg-white"
         value={songName}
         onChange={(e) => setSongName(e.target.value)}
       />
       <div className="flex w-full justify-between flex-wrap items-center gap-4">
         {/*Artist Name */}
-        <FilterButtons
-          filterData={allArtists}
-          flag={"Artist"}
-          data={artistName}
-          songAudioCover={songAudioCover}
-        />
+        <FilterButtons filterData={allArtists} flag={"Artist"} />
         {/*Album Name */}
-        <FilterButtons
-          filterData={allAlbums}
-          flag={"Albums"}
-          data={albumName}
-          songAudioCover={songAudioCover}
-        />
+        <FilterButtons filterData={allAlbums} flag={"Albums"} />
         {/*Language */}
-        <FilterButtons
-          filterData={filterByLanguage}
-          flag={"Language"}
-          data={Language}
-          songAudioCover={songAudioCover}
-        />
+        <FilterButtons filterData={filterByLanguage} flag={"Language"} />
         {/*Category Name */}
-        <FilterButtons
-          filterData={filters}
-          flag={"Category"}
-          data={Category}
-          songAudioCover={songAudioCover}
-        />
+        <FilterButtons filterData={filters} flag={"Category"} />
       </div>
       {/*Image File Uploading */}
       <div className="bg-card backdrop-blur-md w-full h-300 rounded-md border-2 border-dotted border-black bg-gray-100 cursor-pointer">
@@ -381,11 +358,6 @@ const DashBoardNewSong = () => {
                 setProgress={setAudioUploadingProgress}
                 isLoading={setIsAudioLoading}
                 isImage={false}
-                setArtistName={setArtistName}
-                setAlbumName={setAlbumName}
-                setLanguage={setLanguage}
-                setCategory={setCategory}
-                setTitleName={setTitleName}
                 setSongName={setSongName}
               />
             ) : (
@@ -563,11 +535,11 @@ export const DisabledButton = () => {
     <button
       disabled
       type="button"
-      class="text-white bg-blue-400 hover:bg-blue-200 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 dark:bg-blue-400 dark:hover:bg-blue-200 dark:focus:ring-blue-800 inline-flex items-center"
+      className="text-white bg-blue-400 hover:bg-blue-200 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 dark:bg-blue-400 dark:hover:bg-blue-200 dark:focus:ring-blue-800 inline-flex items-center"
     >
       <svg
         role="status"
-        class="inline mr-3 w-4 h-4 text-white animate-spin"
+        className="inline mr-3 w-4 h-4 text-white animate-spin"
         viewBox="0 0 100 101"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -626,11 +598,6 @@ export const FileUploader = ({
   setSongName,
   isLoading,
   isImage,
-  setAlbumName,
-  setTitleName,
-  setArtistName,
-  setCategory,
-  setLanguage,
 }) => {
   const [{ alertType }, dispatch] = useStateValue();
   const uploadFile = (e) => {
@@ -660,11 +627,6 @@ export const FileUploader = ({
             jsmediatags.read(uploadedFile, {
               onSuccess: function (tag) {
                 setSongName(tag.tags.title);
-                setTitleName(tag.tags.title);
-                setArtistName(tag.tags.artist);
-                setAlbumName(tag.tags.album);
-                setLanguage(tag.tags.language);
-                setCategory(tag.tags.genre);
               },
               onError: function (error) {
                 dispatch({
@@ -707,7 +669,7 @@ export const FileUploader = ({
             <BiCloudUpload />
           </p>
           <p className="text-lg">
-            Click to Upload {isImage ? "an Song Image" : "an audio"}
+            Click to Upload {isImage ? "an Image" : "an audio"}
           </p>
         </div>
       </div>
